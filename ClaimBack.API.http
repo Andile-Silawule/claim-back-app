@@ -1,0 +1,11 @@
+### Create a purchase
+POST http://localhost:5293/api/purchases
+Content-Type: application/json
+
+{
+  "productName": "Samsung Galaxy S25",
+  "retailer": "Samsung Store",
+  "purchaseDate": "2026-11-08T00:00:00",
+  "purchasePrice": 15999.99,
+  "warrantyDurationMonths": 24
+}
