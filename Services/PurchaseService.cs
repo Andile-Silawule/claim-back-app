@@ -62,6 +62,24 @@ namespace ClaimBack.API.Services
 
             return purchase;
         }
+
+        public async Task<bool> ArchivePurchaseAsync(int id)
+        {
+            var purchase = await _context.Purchases.FindAsync(id);
+
+            if (purchase == null)
+            {
+                return false;
+            }
+
+            purchase.IsArchived = true;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+
     }
 
 }

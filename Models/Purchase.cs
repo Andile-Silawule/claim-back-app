@@ -8,6 +8,7 @@
         public DateTime PurchaseDate { get; set; } 
         public decimal PurchasePrice { get; set; }
         public int WarrantyDurationMonths { get; set; }
+        public bool IsArchived { get; set; } = true;
         public DateTime WarrantyEndDate => PurchaseDate.AddMonths(WarrantyDurationMonths);
 
     }
