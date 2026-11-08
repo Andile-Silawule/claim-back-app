@@ -40,5 +40,32 @@ namespace ClaimBack.API.Controllers
                 purchase
             );
         }
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdatePurchase(int id, UpdatePurchaseDto dto)
+        {
+            var purchase = await _purchaseService.UpdatePurchaseAsync(id, dto);
+
+            if (purchase == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(purchase);
+        }
+
+        [HttpPatch("{id:int}/archive")]
+        public async Task<IActionResult> ArchivePurchase(int id)
+        {
+            var archived = await _purchaseService.ArchivePurchaseAsync(id);
+
+            if (!archived)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+
     }
 }
