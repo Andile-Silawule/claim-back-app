@@ -9,3 +9,11 @@ Content-Type: application/json
   "purchasePrice": 15999.99,
   "warrantyDurationMonths": 24
 }
+
+### Get all active purchases
+GET http://localhost:5293/api/purchases/1
+Accept: application/json
+
+
+### Restore an archived purchase
+PATCH http://localhost:5293/api/purchases/2/restore

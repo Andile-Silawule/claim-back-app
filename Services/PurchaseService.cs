@@ -8,7 +8,6 @@ namespace ClaimBack.API.Services
 {
     public class PurchaseService
     {
-        
         private readonly ClaimBackDbContext _context;
 
         public PurchaseService(ClaimBackDbContext context)
@@ -18,7 +17,9 @@ namespace ClaimBack.API.Services
 
         public async Task<List<Purchase>> GetAllPurchasesAsync()
         {
-            return await _context.Purchases.ToListAsync();
+            return await _context.Purchases
+                .Where(p => !p.IsArchived)
+                .ToListAsync();
         }
 
         public async Task<Purchase> CreatePurchaseAsync(CreatePurchaseDto dto)
@@ -33,11 +34,11 @@ namespace ClaimBack.API.Services
             };
 
             _context.Purchases.Add(purchase);
-
             await _context.SaveChangesAsync();
 
             return purchase;
         }
+
         public async Task<Purchase?> GetPurchaseByIdAsync(int id)
         {
             return await _context.Purchases.FindAsync(id);
@@ -48,9 +49,7 @@ namespace ClaimBack.API.Services
             var purchase = await _context.Purchases.FindAsync(id);
 
             if (purchase == null)
-            {
                 return null;
-            }
 
             purchase.ProductName = dto.ProductName;
             purchase.Retailer = dto.Retailer;
@@ -62,6 +61,40 @@ namespace ClaimBack.API.Services
 
             return purchase;
         }
-    }
 
+        public async Task<bool> ArchivePurchaseAsync(int id)
+        {
+            var purchase = await _context.Purchases.FindAsync(id);
+
+            if (purchase == null)
+                return false;
+
+            purchase.IsArchived = true;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RestorePurchaseAsync(int id)
+        {
+            var purchase = await _context.Purchases.FindAsync(id);
+
+            if (purchase == null)
+                return false;
+
+            purchase.IsArchived = false;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<List<Purchase>> GetArchivedPurchasesAsync()
+        {
+            return await _context.Purchases
+                .Where(p => p.IsArchived)
+                .ToListAsync();
+        }
+    }
 }

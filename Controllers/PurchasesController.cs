@@ -40,5 +40,39 @@ namespace ClaimBack.API.Controllers
                 purchase
             );
         }
+        [HttpPatch("{id:int}/archive")]
+        public async Task<IActionResult> ArchivePurchase(int id)
+        {
+            var archived = await _purchaseService.ArchivePurchaseAsync(id);
+
+            if (!archived)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+
+        [HttpPatch("{id:int}/restore")]
+        public async Task<IActionResult> RestorePurchase(int id)
+        {
+            var restored = await _purchaseService.RestorePurchaseAsync(id);
+
+            if (!restored)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpGet("archived")]
+        public async Task<IActionResult> GetArchivedPurchases()
+        {
+            var purchases = await _purchaseService.GetArchivedPurchasesAsync();
+
+            return Ok(purchases);
+        }
     }
 }
