@@ -17,3 +17,11 @@ Accept: application/json
 
 ### Restore an archived purchase
 PATCH http://localhost:5293/api/purchases/2/restore
+
+### Get archived purchases
+GET http://localhost:5293/api/purchases/archived
+Accept: application/json
+
+
+### Archive a purchase
+PATCH http://localhost:5293/api/purchases/9/archive
