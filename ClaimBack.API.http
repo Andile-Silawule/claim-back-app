@@ -3,9 +3,22 @@ POST http://localhost:5293/api/purchases
 Content-Type: application/json
 
 {
-  "productName": "Samsung Galaxy S25",
-  "retailer": "Samsung Store",
+  "productName": "PS5",
+  "retailer": "Game",
+  "purchaseDate": "2026-10-31T00:00:00",
+  "purchasePrice": 23000.99,
+  "warrantyDurationMonths": 30
+}
+
+### Update a purchase
+PUT http://localhost:5293/api/purchases/1
+Content-Type: application/json
+
+{
+  "productName": "Samsung Galaxy S25 Ultra",
+  "retailer": "Samsung Online Store",
   "purchaseDate": "2026-11-08T00:00:00",
+<<<<<<< HEAD
   "purchasePrice": 15999.99,
   "warrantyDurationMonths": 24
 }
@@ -25,3 +38,10 @@ Accept: application/json
 
 ### Archive a purchase
 PATCH http://localhost:5293/api/purchases/9/archive
+=======
+  "purchasePrice": 20000.99,
+  "warrantyDurationMonths": 36
+}
+
+
+>>>>>>> 7a9e44e66792f6a7929cf31e6613889ff5c97548

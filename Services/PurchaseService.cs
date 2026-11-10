@@ -22,6 +22,13 @@ namespace ClaimBack.API.Services
                 .ToListAsync();
         }
 
+        public async Task<List<Purchase>> GetArchivedPurchasesAsync()
+        {
+            return await _context.Purchases
+                .Where(p => p.IsArchived)
+                .ToListAsync();
+        }
+
         public async Task<Purchase> CreatePurchaseAsync(CreatePurchaseDto dto)
         {
             var purchase = new Purchase
@@ -88,13 +95,6 @@ namespace ClaimBack.API.Services
             await _context.SaveChangesAsync();
 
             return true;
-        }
-
-        public async Task<List<Purchase>> GetArchivedPurchasesAsync()
-        {
-            return await _context.Purchases
-                .Where(p => p.IsArchived)
-                .ToListAsync();
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using ClaimBack.API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClaimBack.API.Data
 {
-    public class ClaimBackDbContext : DbContext
+    public class ClaimBackDbContext : IdentityDbContext<ApplicationUser>
     {
         public ClaimBackDbContext(DbContextOptions<ClaimBackDbContext> options)
             : base(options)

@@ -16,17 +16,31 @@ namespace ClaimBack.API.Controllers
             _purchaseService = purchaseService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPurchases()
+        {
+            var purchases = await _purchaseService.GetAllPurchasesAsync();
+
+            return Ok(purchases);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetPurchaseById(int id)
         {
             var purchase = await _purchaseService.GetPurchaseByIdAsync(id);
 
             if (purchase is null)
-            {
                 return NotFound();
-            }
 
             return Ok(purchase);
+        }
+
+        [HttpGet("archived")]
+        public async Task<IActionResult> GetArchivedPurchases()
+        {
+            var purchases = await _purchaseService.GetArchivedPurchasesAsync();
+
+            return Ok(purchases);
         }
 
         [HttpPost]
@@ -40,19 +54,28 @@ namespace ClaimBack.API.Controllers
                 purchase
             );
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdatePurchase(int id, UpdatePurchaseDto dto)
+        {
+            var purchase = await _purchaseService.UpdatePurchaseAsync(id, dto);
+
+            if (purchase == null)
+                return NotFound();
+
+            return Ok(purchase);
+        }
+
         [HttpPatch("{id:int}/archive")]
         public async Task<IActionResult> ArchivePurchase(int id)
         {
             var archived = await _purchaseService.ArchivePurchaseAsync(id);
 
             if (!archived)
-            {
                 return NotFound();
-            }
 
             return NoContent();
         }
-
 
         [HttpPatch("{id:int}/restore")]
         public async Task<IActionResult> RestorePurchase(int id)
@@ -60,19 +83,9 @@ namespace ClaimBack.API.Controllers
             var restored = await _purchaseService.RestorePurchaseAsync(id);
 
             if (!restored)
-            {
                 return NotFound();
-            }
 
             return NoContent();
-        }
-
-        [HttpGet("archived")]
-        public async Task<IActionResult> GetArchivedPurchases()
-        {
-            var purchases = await _purchaseService.GetArchivedPurchasesAsync();
-
-            return Ok(purchases);
         }
     }
 }
