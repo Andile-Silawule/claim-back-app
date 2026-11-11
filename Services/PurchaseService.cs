@@ -15,21 +15,21 @@ namespace ClaimBack.API.Services
             _context = context;
         }
 
-        public async Task<List<Purchase>> GetAllPurchasesAsync()
+        public async Task<List<Purchase>> GetAllPurchasesAsync(string userId)
         {
             return await _context.Purchases
-                .Where(p => !p.IsArchived)
+                .Where(p => p.UserId == userId && !p.IsArchived)
                 .ToListAsync();
         }
 
-        public async Task<List<Purchase>> GetArchivedPurchasesAsync()
+        public async Task<List<Purchase>> GetArchivedPurchasesAsync(string userId)
         {
             return await _context.Purchases
-                .Where(p => p.IsArchived)
+                .Where(p => p.UserId == userId && p.IsArchived)
                 .ToListAsync();
         }
 
-        public async Task<Purchase> CreatePurchaseAsync(CreatePurchaseDto dto)
+        public async Task<Purchase> CreatePurchaseAsync(CreatePurchaseDto dto, string userId)
         {
             var purchase = new Purchase
             {
@@ -37,7 +37,8 @@ namespace ClaimBack.API.Services
                 Retailer = dto.Retailer,
                 PurchaseDate = dto.PurchaseDate,
                 PurchasePrice = dto.PurchasePrice,
-                WarrantyDurationMonths = dto.WarrantyDurationMonths
+                WarrantyDurationMonths = dto.WarrantyDurationMonths,
+                UserId = userId
             };
 
             _context.Purchases.Add(purchase);
@@ -46,14 +47,16 @@ namespace ClaimBack.API.Services
             return purchase;
         }
 
-        public async Task<Purchase?> GetPurchaseByIdAsync(int id)
+        public async Task<Purchase?> GetPurchaseByIdAsync(int id, string userId)
         {
-            return await _context.Purchases.FindAsync(id);
+            return await _context.Purchases
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
         }
 
-        public async Task<Purchase?> UpdatePurchaseAsync(int id, UpdatePurchaseDto dto)
+        public async Task<Purchase?> UpdatePurchaseAsync(int id, UpdatePurchaseDto dto, string userId)
         {
-            var purchase = await _context.Purchases.FindAsync(id);
+            var purchase = await _context.Purchases
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (purchase == null)
                 return null;
@@ -69,9 +72,10 @@ namespace ClaimBack.API.Services
             return purchase;
         }
 
-        public async Task<bool> ArchivePurchaseAsync(int id)
+        public async Task<bool> ArchivePurchaseAsync(int id, string userId)
         {
-            var purchase = await _context.Purchases.FindAsync(id);
+            var purchase = await _context.Purchases
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (purchase == null)
                 return false;
@@ -83,9 +87,10 @@ namespace ClaimBack.API.Services
             return true;
         }
 
-        public async Task<bool> RestorePurchaseAsync(int id)
+        public async Task<bool> RestorePurchaseAsync(int id, string userId)
         {
-            var purchase = await _context.Purchases.FindAsync(id);
+            var purchase = await _context.Purchases
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (purchase == null)
                 return false;
