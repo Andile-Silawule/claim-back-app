@@ -12,6 +12,7 @@ namespace ClaimBack.API.Data
 
         }
         public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<PurchaseDocument> PurchaseDocuments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-
 namespace ClaimBack.API.Controllers
 {
     [ApiController]
@@ -14,10 +13,14 @@ namespace ClaimBack.API.Controllers
     public class PurchasesController : ControllerBase
     {
         private readonly PurchaseService _purchaseService;
+        private readonly DocumentService _documentService;
 
-        public PurchasesController(PurchaseService purchaseService)
+        public PurchasesController(
+            PurchaseService purchaseService,
+            DocumentService documentService)
         {
             _purchaseService = purchaseService;
+            _documentService = documentService;
         }
 
         private string UserId =>
@@ -86,6 +89,76 @@ namespace ClaimBack.API.Controllers
             if (!restored) return NotFound();
 
             return NoContent();
+        }
+
+        [HttpPost("{id:int}/documents")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadDocument(int id, IFormFile file)
+        {
+            if (file == null)
+                return BadRequest(new { Message = "Please select a file." });
+
+            try
+            {
+                var document = await _documentService.UploadDocumentAsync(
+                    id,
+                    UserId,
+                    file);
+
+                if (document == null)
+                    return NotFound(new { Message = "Purchase not found." });
+
+                return Ok(new
+                {
+                    document.Id,
+                    document.PurchaseId,
+                    document.FileName,
+                    document.ContentType,
+                    document.FileSize,
+                    document.UploadedAt
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("{id:int}/documents")]
+        public async Task<IActionResult> GetDocuments(int id)
+        {
+            var documents = await _documentService.GetDocumentsAsync(id, UserId);
+
+            if (documents == null)
+                return NotFound();
+
+            return Ok(documents.Select(d => new
+            {
+                d.Id,
+                d.PurchaseId,
+                d.FileName,
+                d.ContentType,
+                d.FileSize,
+                d.UploadedAt
+            }));
+        }
+
+        [HttpGet("documents/{documentId:int}/download")]
+        public async Task<IActionResult> DownloadDocument(int documentId)
+        {
+            var result = await _documentService.GetDocumentForDownloadAsync(
+                documentId,
+                UserId);
+
+            if (result == null)
+                return NotFound();
+
+            var (document, filePath) = result.Value;
+
+            return PhysicalFile(
+                filePath,
+                document.ContentType,
+                document.FileName);
         }
     }
 }

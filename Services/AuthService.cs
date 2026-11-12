@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Claim = System.Security.Claims.Claim;
 using System.Text;
 
 namespace ClaimBack.API.Services

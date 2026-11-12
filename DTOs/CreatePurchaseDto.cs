@@ -8,6 +8,8 @@ namespace ClaimBack.API.DTOs
         [StringLength(150)]
         public string ProductName { get; set; } = string.Empty;
 
+        public DateTime? ReturnDeadline { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Retailer { get; set; } = string.Empty;

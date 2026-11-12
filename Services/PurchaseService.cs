@@ -38,7 +38,9 @@ namespace ClaimBack.API.Services
                 PurchaseDate = dto.PurchaseDate,
                 PurchasePrice = dto.PurchasePrice,
                 WarrantyDurationMonths = dto.WarrantyDurationMonths,
-                UserId = userId
+                UserId = userId,
+                ReturnDeadline = dto.ReturnDeadline,
+
             };
 
             _context.Purchases.Add(purchase);
@@ -66,6 +68,7 @@ namespace ClaimBack.API.Services
             purchase.PurchaseDate = dto.PurchaseDate;
             purchase.PurchasePrice = dto.PurchasePrice;
             purchase.WarrantyDurationMonths = dto.WarrantyDurationMonths;
+            purchase.ReturnDeadline = dto.ReturnDeadline;
 
             await _context.SaveChangesAsync();
 

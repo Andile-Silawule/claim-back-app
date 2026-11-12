@@ -70,6 +70,7 @@ builder.Services.AddAuthorization();
 // Application services
 builder.Services.AddScoped<PurchaseService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DocumentService>();
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
