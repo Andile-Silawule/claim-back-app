@@ -28,5 +28,7 @@ namespace ClaimBack.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; }
+        public ICollection<ClaimActivity> Activities { get; set; }
+    = new List<ClaimActivity>();
     }
 }

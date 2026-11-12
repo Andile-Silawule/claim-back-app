@@ -98,6 +98,94 @@ namespace ClaimBack.API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ClaimBack.API.Models.Claim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimAgainst")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimReference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateReported")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Outcome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("Claims");
+                });
+
+            modelBuilder.Entity("ClaimBack.API.Models.ClaimActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClaimId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PerformedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId");
+
+                    b.ToTable("ClaimActivities");
+                });
+
             modelBuilder.Entity("ClaimBack.API.Models.Purchase", b =>
                 {
                     b.Property<int>("Id")
@@ -309,6 +397,28 @@ namespace ClaimBack.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ClaimBack.API.Models.Claim", b =>
+                {
+                    b.HasOne("ClaimBack.API.Models.Purchase", "Purchase")
+                        .WithMany("Claims")
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Purchase");
+                });
+
+            modelBuilder.Entity("ClaimBack.API.Models.ClaimActivity", b =>
+                {
+                    b.HasOne("ClaimBack.API.Models.Claim", "Claim")
+                        .WithMany("Activities")
+                        .HasForeignKey("ClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Claim");
+                });
+
             modelBuilder.Entity("ClaimBack.API.Models.Purchase", b =>
                 {
                     b.HasOne("ClaimBack.API.Models.ApplicationUser", "User")
@@ -380,8 +490,15 @@ namespace ClaimBack.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ClaimBack.API.Models.Claim", b =>
+                {
+                    b.Navigation("Activities");
+                });
+
             modelBuilder.Entity("ClaimBack.API.Models.Purchase", b =>
                 {
+                    b.Navigation("Claims");
+
                     b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618

@@ -146,9 +146,7 @@ namespace ClaimBack.API.Controllers
         [HttpGet("documents/{documentId:int}/download")]
         public async Task<IActionResult> DownloadDocument(int documentId)
         {
-            var result = await _documentService.GetDocumentForDownloadAsync(
-                documentId,
-                UserId);
+            var result = await _documentService.GetDocumentForDownloadAsync( documentId, UserId);
 
             if (result == null)
                 return NotFound();
