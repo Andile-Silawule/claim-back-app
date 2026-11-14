@@ -13,10 +13,14 @@ namespace ClaimBack.API.Controllers
     public class ClaimsController : ControllerBase
     {
         private readonly ClaimService _claimService;
+        private readonly NotificationService _notificationService;
 
-        public ClaimsController(ClaimService claimService)
+        public ClaimsController(
+            ClaimService claimService,
+            NotificationService notificationService)
         {
             _claimService = claimService;
+            _notificationService = notificationService;
         }
 
         private string UserId =>
@@ -54,7 +58,6 @@ namespace ClaimBack.API.Controllers
                 });
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetClaims(
             [FromQuery] ClaimQueryDto queryDto)
@@ -79,7 +82,6 @@ namespace ClaimBack.API.Controllers
                 c.UpdatedAt
             }));
         }
-
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetClaimById(int id)
@@ -107,7 +109,6 @@ namespace ClaimBack.API.Controllers
             });
         }
 
-
         [HttpPatch("{id:int}/status")]
         public async Task<IActionResult> UpdateClaimStatus(
             int id,
@@ -115,6 +116,14 @@ namespace ClaimBack.API.Controllers
         {
             try
             {
+                var existingClaim =
+                    await _claimService.GetClaimByIdAsync(id, UserId);
+
+                if (existingClaim == null)
+                    return NotFound();
+
+                var oldStatus = existingClaim.Status;
+
                 var claim = await _claimService.UpdateClaimStatusAsync(
                     id,
                     dto,
@@ -122,6 +131,15 @@ namespace ClaimBack.API.Controllers
 
                 if (claim == null)
                     return NotFound();
+
+                if (oldStatus != claim.Status)
+                {
+                    await _notificationService.CreateNotificationAsync(
+                        UserId,
+                        "Claim status updated",
+                        $"Your claim {claim.ClaimReference} has changed from {oldStatus} to {claim.Status}.",
+                        "ClaimUpdate");
+                }
 
                 return Ok(new
                 {
@@ -136,7 +154,6 @@ namespace ClaimBack.API.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
-
 
         [HttpGet("{id:int}/activities")]
         public async Task<IActionResult> GetClaimActivities(int id)
@@ -159,7 +176,5 @@ namespace ClaimBack.API.Controllers
                 a.CreatedAt
             }));
         }
-
-
     }
 }
