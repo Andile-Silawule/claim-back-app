@@ -137,6 +137,60 @@ namespace ClaimBack.API.Services
         }
 
 
+        public async Task<List<Claim>> SearchClaimsAsync(
+            ClaimQueryDto queryDto,
+            string userId)
+        {
+            var query = _context.Claims
+                .Where(c => c.Purchase.UserId == userId);
+
+            // Search by company name or claim reference
+            if (!string.IsNullOrWhiteSpace(queryDto.SearchTerm))
+            {
+                var searchTerm = queryDto.SearchTerm.Trim();
+
+                query = query.Where(c =>
+                    c.CompanyName.Contains(searchTerm) ||
+                    c.ClaimReference.Contains(searchTerm));
+            }
+
+            // Filter by status
+            if (!string.IsNullOrWhiteSpace(queryDto.Status))
+            {
+                query = query.Where(c =>
+                    c.Status == queryDto.Status);
+            }
+
+            // Filter by claim type
+            if (!string.IsNullOrWhiteSpace(queryDto.ClaimType))
+            {
+                query = query.Where(c =>
+                    c.ClaimType == queryDto.ClaimType);
+            }
+
+            // Sort results
+            var sortBy = queryDto.SortBy?.ToLowerInvariant();
+
+            var sortedQuery = sortBy switch
+            {
+                "status" => queryDto.SortDescending
+                    ? query.OrderByDescending(c => c.Status)
+                    : query.OrderBy(c => c.Status),
+
+                "companyname" => queryDto.SortDescending
+                    ? query.OrderByDescending(c => c.CompanyName)
+                    : query.OrderBy(c => c.CompanyName),
+
+                _ => queryDto.SortDescending
+                    ? query.OrderByDescending(c => c.DateReported)
+                    : query.OrderBy(c => c.DateReported)
+            };
+
+            return await sortedQuery.ToListAsync();
+        }
+
+
+
 
     }
 }

@@ -54,17 +54,20 @@ namespace ClaimBack.API.Controllers
                 });
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetClaims()
+        public async Task<IActionResult> GetClaims(
+            [FromQuery] ClaimQueryDto queryDto)
         {
-            var claims = await _claimService.GetAllClaimsAsync(UserId);
+            var claims = await _claimService.SearchClaimsAsync(
+                queryDto,
+                UserId);
 
             return Ok(claims.Select(c => new
             {
                 c.Id,
                 c.ClaimReference,
                 c.PurchaseId,
-                PurchaseName = c.Purchase.ProductName,
                 c.ClaimType,
                 c.ClaimAgainst,
                 c.CompanyName,
@@ -76,6 +79,7 @@ namespace ClaimBack.API.Controllers
                 c.UpdatedAt
             }));
         }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetClaimById(int id)

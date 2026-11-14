@@ -104,5 +104,58 @@ namespace ClaimBack.API.Services
 
             return true;
         }
+
+
+        public async Task<List<Purchase>> SearchPurchasesAsync(
+            PurchaseQueryDto queryDto,
+            string userId)
+        {
+            var query = _context.Purchases
+                .Where(p => p.UserId == userId && !p.IsArchived);
+
+            // Search by product name or retailer
+            if (!string.IsNullOrWhiteSpace(queryDto.SearchTerm))
+            {
+                var searchTerm = queryDto.SearchTerm.Trim();
+
+                query = query.Where(p =>
+                    p.ProductName.Contains(searchTerm) ||
+                    p.Retailer.Contains(searchTerm));
+            }
+
+            // Filter by retailer
+            if (!string.IsNullOrWhiteSpace(queryDto.Retailer))
+            {
+                var retailer = queryDto.Retailer.Trim();
+
+                query = query.Where(p =>
+                    p.Retailer.Contains(retailer));
+            }
+
+            // Sort results
+            var sortBy = queryDto.SortBy?.ToLowerInvariant();
+
+            var sortedQuery = sortBy switch
+            {
+                "productname" => queryDto.SortDescending
+                    ? query.OrderByDescending(p => p.ProductName)
+                    : query.OrderBy(p => p.ProductName),
+
+                "purchaseprice" => queryDto.SortDescending
+                    ? query.OrderByDescending(p => p.PurchasePrice)
+                    : query.OrderBy(p => p.PurchasePrice),
+
+                "retailer" => queryDto.SortDescending
+                    ? query.OrderByDescending(p => p.Retailer)
+                    : query.OrderBy(p => p.Retailer),
+
+                _ => queryDto.SortDescending
+                    ? query.OrderByDescending(p => p.PurchaseDate)
+                    : query.OrderBy(p => p.PurchaseDate)
+            };
+
+            return await sortedQuery.ToListAsync();
+        }
+
     }
 }

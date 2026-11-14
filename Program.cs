@@ -72,6 +72,7 @@ builder.Services.AddScoped<PurchaseService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<ClaimService>();
+builder.Services.AddScoped<DashboardService>();
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();

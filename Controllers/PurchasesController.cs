@@ -26,12 +26,18 @@ namespace ClaimBack.API.Controllers
         private string UserId =>
             User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
+
         [HttpGet]
-        public async Task<IActionResult> GetPurchases()
+        public async Task<IActionResult> GetPurchases(
+            [FromQuery] PurchaseQueryDto queryDto)
         {
-            var purchases = await _purchaseService.GetAllPurchasesAsync(UserId);
+            var purchases = await _purchaseService.SearchPurchasesAsync(
+                queryDto,
+                UserId);
+
             return Ok(purchases);
         }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetPurchaseById(int id)

@@ -15,6 +15,7 @@ namespace ClaimBack.API.Data
         public DbSet<PurchaseDocument> PurchaseDocuments { get; set; }
         public DbSet<Claim> Claims { get; set; }
         public DbSet<ClaimActivity> ClaimActivities { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,12 @@ namespace ClaimBack.API.Data
             modelBuilder.Entity<Purchase>()
                 .Property(p => p.PurchasePrice)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

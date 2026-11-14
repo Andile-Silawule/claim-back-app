@@ -186,6 +186,43 @@ namespace ClaimBack.API.Migrations
                     b.ToTable("ClaimActivities");
                 });
 
+            modelBuilder.Entity("ClaimBack.API.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("ClaimBack.API.Models.Purchase", b =>
                 {
                     b.Property<int>("Id")
@@ -417,6 +454,17 @@ namespace ClaimBack.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Claim");
+                });
+
+            modelBuilder.Entity("ClaimBack.API.Models.Notification", b =>
+                {
+                    b.HasOne("ClaimBack.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClaimBack.API.Models.Purchase", b =>
