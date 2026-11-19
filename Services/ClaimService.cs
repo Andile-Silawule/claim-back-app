@@ -136,7 +136,7 @@ namespace ClaimBack.API.Services
                 .ToListAsync();
         }
 
-
+        
         public async Task<List<Claim>> SearchClaimsAsync(
             ClaimQueryDto queryDto,
             string userId)

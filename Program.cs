@@ -8,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -75,6 +73,17 @@ builder.Services.AddScoped<ClaimService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<NotificationService>();
 
+// CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
 
@@ -111,6 +120,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Middleware
+app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();
