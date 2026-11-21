@@ -19,7 +19,7 @@ namespace ClaimBack.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
+            var (result, token) = await _authService.RegisterAsync(dto);
 
             if (!result.Succeeded)
             {
@@ -31,7 +31,8 @@ namespace ClaimBack.API.Controllers
 
             return Ok(new
             {
-                Message = "Account registered successfully."
+                Message = "Account registered successfully.",
+                Token = token
             });
         }
 
