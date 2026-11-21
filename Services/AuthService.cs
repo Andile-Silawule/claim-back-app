@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Claim = System.Security.Claims.Claim;
-using System.Text;
 
 namespace ClaimBack.API.Services
 {
@@ -23,7 +21,7 @@ namespace ClaimBack.API.Services
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterDto dto)
+        public async Task<(IdentityResult Result, string? Token)> RegisterAsync(RegisterDto dto)
         {
             var user = new ApplicationUser
             {
@@ -34,7 +32,16 @@ namespace ClaimBack.API.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            return await _userManager.CreateAsync(user, dto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
+            if (!result.Succeeded)
+            {
+                return (result, null);
+            }
+
+            var token = GenerateJwtToken(user);
+
+            return (result, token);
         }
 
         public async Task<string?> LoginAsync(LoginDto dto)
@@ -66,11 +73,17 @@ namespace ClaimBack.API.Services
                 signingKey,
                 SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            System.Security.Claims.Claim[] claims =
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email!),
-                new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName)
+                new System.Security.Claims.Claim(
+                    ClaimTypes.NameIdentifier, user.Id),
+
+                new System.Security.Claims.Claim(
+                    ClaimTypes.Email, user.Email!),
+
+                new System.Security.Claims.Claim(
+                    ClaimTypes.Name,
+                    user.FirstName + " " + user.LastName)
             };
 
             var token = new JwtSecurityToken(
